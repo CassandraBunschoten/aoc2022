@@ -76,20 +76,19 @@ def toResult(input: String): Result =
 def toGameP2(opponent: String, result: String) = 
   GameP2(toResponse(opponent), toResult(result))
 
-object AOC2 extends App {
+object AOC2 extends App:
 
   val input = Source
       .fromFile("src/main/resources/input_aoc2.txt")
       .getLines.map(_.split(" ")).toList
 
-  val inputP1 = input
+  val answerP1 = input
     .map(x => toGameP1(x(0), x(1)).getScore).sum
 
-  val inputP2 = input
+  val answerP2 = input
      .map(x => toGameP2(x(0), x(1)).getScoreP2).sum
 
 
-  println("Answer to part 1: " + inputP1)
-  println("Answer to part 2: " + inputP2)
+  println("Answer to part 1: " + answerP1)
+  println("Answer to part 2: " + answerP2)
 
-}
