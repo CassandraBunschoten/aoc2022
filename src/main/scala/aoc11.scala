@@ -1,7 +1,5 @@
 package aoc2022
 
-import aoc2022.AO11.input
-
 import scala.io.Source
 
 case class Monkey(name: Int, items: List[BigInt], operation: (BigInt, BigInt) => BigInt, opNum: Option[BigInt], divisible: Int, testTrue: Int, testFalse: Int, tracker: BigInt)
@@ -60,7 +58,7 @@ def answer(monkeys: List[Monkey], rounds: Int, op: (BigInt, BigInt) => BigInt, n
   max.sorted.reverse.take(2).product
 }
 
-object AO11 extends App:
+object AOC11 extends App:
   val input = Source.fromFile("src/main/resources/input_aoc11.txt")
               .mkString
               .split("\n\n")
