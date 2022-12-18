@@ -1,4 +1,4 @@
-package aoc2022
+package aoc03
 
 import scala.io.Source
 
@@ -14,7 +14,7 @@ def getValue(ch: Char) =
 
 object AOC3 extends App:
 
-  val input = Source.fromFile("src/main/resources/input_aoc3.txt").getLines.toList
+  val input = Source.fromFile("src/main/resources/input_aoc03.txt").getLines.toList
 
   val answerP1 = input
                  .map(rs => rs.grouped(rs.size/2).toArray)

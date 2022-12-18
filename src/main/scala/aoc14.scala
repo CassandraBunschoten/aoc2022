@@ -1,3 +1,5 @@
+package aoc14
+
 import scala.io.Source
 import scala.collection.mutable.ArrayBuffer
 import java.io._
@@ -69,8 +71,8 @@ case class Coord(x: Int, y: Int):
   def difference(coord2: Coord): (Int, Int) =
     (this.x - coord2.x, this.y - coord2.y)
 
-object Day14 extends App :
-  val input = Source.fromFile("src/main/resources/input_example.txt")
+object AOC14 extends App :
+  val input = Source.fromFile("src/main/resources/input_aoc14.txt")
     .getLines.map(x => x.split(" -> ").toList)
     .flatMap(l => {
       val pattern(x, y) = l.head
@@ -95,4 +97,5 @@ object Day14 extends App :
 
   visualise(cave)
 
-  println(answerP1)
+  println("Answer to part 1: " + answerP1)
+  println("Answer to part 2: " + answerP2)

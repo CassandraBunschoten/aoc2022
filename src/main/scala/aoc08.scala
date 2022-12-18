@@ -1,4 +1,4 @@
-package aoc2022
+package aoc08
 
 import scala.io.Source
 
@@ -94,7 +94,7 @@ def viewInCol(trees: Map[Coordinates, Int], height: Int, counter: Int = 0, resul
 
 def tinyView(direction: Direction, currentCoord: Coordinates, currentNum: Int, neighs: Map[Coordinates, Int], counter: Int, result: Int, limit: Int): Int =
   direction match {
-    case L => tinyViewRow(currentCoord, currentNum, neighs, counter, result, limit,  _ - _,  _ <= _)
+    case L => tinyViewRow(currentCoord, currentNum, neighs, counter, result, limit, _ - _,  _ <= _)
     case R => tinyViewRow(currentCoord, currentNum, neighs, counter, result, limit, _ + _, _ >= _)
     case U => tinyViewCol(currentCoord, currentNum, neighs, counter, result, limit, _ - _, _ <= _)
     case D => tinyViewCol(currentCoord, currentNum, neighs, counter, result, limit, _ + _, _ >= _)
@@ -121,7 +121,7 @@ def tinyViewCol(currentCoord: Coordinates, currentNum: Int, neighs: Map[Coordina
 
 object AOC8 extends App :
 
-  val coords = getCoordinates(Source.fromFile("src/main/resources/input_aoc8.txt").getLines.zipWithIndex.toList)
+  val coords = getCoordinates(Source.fromFile("src/main/resources/input_aoc08.txt").getLines.zipWithIndex.toList)
 
   val width = coords.keys.map(x => x._1).max
   val height = coords.keys.map(y => y._2).max

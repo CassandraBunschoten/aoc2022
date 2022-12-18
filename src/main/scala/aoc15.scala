@@ -1,4 +1,4 @@
-package aoc2022_15
+package aoc15
 
 import scala.io.Source
 
@@ -37,14 +37,14 @@ var answer: (Int, Int) = (-1, -1)
 def findHoleInRow(li: List[SensorBeaconPair], row: Int, rowMax: Int): Unit =
   val intervalsRow = li.foldLeft(List[Option[Interval]]())((acc, sbp) => sbp.findIntervalForRow(row) :: acc).filter(oi => oi.isDefined).map(_.get)
 
-  val sortedRanges = intervalsRow.sortBy(x => x.lower.x) //.map(x => x.lower.x to x.upper.x + 1)
+  val sortedRanges = intervalsRow.sortBy(x => x.lower.x)
 
-  sortedRanges.foldLeft(0)((acc, x) => if (x.lower.x > acc + 1) {answer = (acc + 1, row)) ; math.max(acc, x.upper.x)} else {math.max(acc, x.upper.x)})
+  sortedRanges.foldLeft(0)((acc, x) => if (x.lower.x > acc + 1) {answer = (acc + 1, row) ; math.max(acc, x.upper.x)} else {math.max(acc, x.upper.x)})
   if (row < rowMax) {
     findHoleInRow(li, row + 1, rowMax)
   } else println("bloop")
 
-object Day15 extends App:
+object AOC15 extends App:
   val input = Source.fromFile("src/main/resources/input_aoc15.txt").getLines.map(parse).toList
 
   val intervalsP1 = input.foldLeft(List[Option[Interval]]())((acc, sbp) => (sbp.findIntervalForRow(2000000) :: acc)).filter(_.isDefined).distinct
@@ -57,5 +57,5 @@ object Day15 extends App:
 
   val answerP2 = (findHoleInRow(input, 0, 4000000))
 
-  println(answerP1)
-  println(answer)
+  println("Answer to part 1: " + answerP1)
+  println("Answer to part 2: " + answer)

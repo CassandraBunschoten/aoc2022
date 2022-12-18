@@ -1,7 +1,7 @@
-package aoc2022
+package aoc09
 
 import scala.io.Source
-import aoc2022.Direction
+import aoc08._
 
 case class Coord(x: Int, y: Int):
   def move(direction: Direction): Coord =
@@ -80,7 +80,7 @@ def parse(s: String): (Direction, Int) =
   }
 
 object AOC9 extends App:
-  val input = Source.fromFile("src/main/resources/input_aoc9.txt").getLines.toList.map(parse)
+  val input = Source.fromFile("src/main/resources/input_aoc09.txt").getLines.toList.map(parse)
 
   val lilLilSnake = LilSnake(List(Coord(0,0), Coord(0,0)))
   val bigLilSnake = LilSnake(List(Coord(0,0), Coord(0,0), Coord(0,0), Coord(0,0), Coord(0,0), Coord(0,0), Coord(0,0), Coord(0,0), Coord(0,0), Coord(0,0)))

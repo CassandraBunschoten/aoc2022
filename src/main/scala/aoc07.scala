@@ -1,4 +1,4 @@
-package aoc2022
+package aoc07
 
 import scala.io.Source 
 
@@ -15,7 +15,6 @@ case class Directory(str: String, path: List[String], files: List[File]):
     val summed = this.files.map(x => x.num).sum
     SummedDirectories(this.str, this.path, summed)
   }
-
 
 def getDirStructure(input: List[String], fs: FolderStructure): FolderStructure = {
   input match {
@@ -48,7 +47,7 @@ def updateDir(file: File, fs: FolderStructure) = {
 }
 
 object AOC7 extends App:
-  val input = Source.fromFile("src/main/resources/input_aoc7.txt").getLines.toList
+  val input = Source.fromFile("src/main/resources/input_aoc07.txt").getLines.toList
 
   val summedInDir = getDirStructure(input, startFolderStructure).directories.map(directory => directory.sumInDirectory)
 

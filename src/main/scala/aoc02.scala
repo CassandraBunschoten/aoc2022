@@ -1,8 +1,6 @@
-package aoc2022 
+package aoc02 
 
 import scala.io.Source
-
-// Part 1
 
 sealed trait Response
 case object Rock extends Response
@@ -19,7 +17,6 @@ def toResponse(input: String): Response =
 def toGameP1(opponent: String, me: String) = 
   GameP1(toResponse(opponent), toResponse(me))  
 
-// PART 1
 case class GameP1(opponent: Response, me: Response): 
   def getScore: Int = {
     this match {
@@ -35,8 +32,6 @@ case class GameP1(opponent: Response, me: Response):
       case _ => sys.error("booboo")
     }
   }
-
-// PART 2
 
 case class GameP2(opponent: Response, result: Result): 
    def getScoreP2: Int = {
@@ -79,7 +74,7 @@ def toGameP2(opponent: String, result: String) =
 object AOC2 extends App:
 
   val input = Source
-      .fromFile("src/main/resources/input_aoc2.txt")
+      .fromFile("src/main/resources/input_aoc02.txt")
       .getLines.map(_.split(" ")).toList
 
   val answerP1 = input

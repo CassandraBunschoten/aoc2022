@@ -1,4 +1,4 @@
-package aoc2022
+package aoc05
 
 import scala.io.Source
 
@@ -26,7 +26,7 @@ def getResult(stacks: List[Stack]): String =
   stacks.map(stack => stack.crates.head).mkString
 
 object AOC5 extends App:
-  val List(boxes, moveList) = Source.fromFile("src/main/resources/input_aoc5.txt").mkString.split("\n\n").toList
+  val List(boxes, moveList) = Source.fromFile("src/main/resources/input_aoc05.txt").mkString.split("\n\n").toList
 
    val finalBoxes = boxes
                     .split("\n")

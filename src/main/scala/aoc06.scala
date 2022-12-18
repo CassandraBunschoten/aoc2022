@@ -1,10 +1,9 @@
-package aoc2022
+package aoc06
 
 import scala.io.Source
 
-
 object AOC6 extends App:
-  val input = Source.fromFile("src/main/resources/input_aoc6.txt").getLines.toList
+  val input = Source.fromFile("src/main/resources/input_aoc06.txt").getLines.toList
 
   def findFirstDistinctGroup(inputList: List[String], window: Int) = 
     inputList

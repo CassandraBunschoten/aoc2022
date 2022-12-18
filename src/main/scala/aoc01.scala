@@ -1,10 +1,10 @@
-package aoc2022 
+package aoc01
 
 import scala.io.Source
 
 object AOC1 extends App:
     val outputP1 = Source
-        .fromFile("src/main/resources/input_aoc1.txt")
+        .fromFile("src/main/resources/input_aoc01.txt")
         .mkString
         .split("\n\n")
         .map(_.split("\n").map(_.toInt))

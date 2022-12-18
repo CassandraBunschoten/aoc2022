@@ -1,4 +1,4 @@
-package aoc2022
+package aoc04
 
 import scala.io.Source
 
@@ -10,7 +10,7 @@ def checkAnyOverlap(r1: Range, r2: Range): Boolean =
   r1.intersect(r2).nonEmpty
 
 object AOC4 extends App:
-  val input = Source.fromFile("src/main/resources/input_aoc4.txt")
+  val input = Source.fromFile("src/main/resources/input_aoc04.txt")
                     .getLines
                     .map{ case s"${e1}-${e2},${e3}-${e4}" => (Range.inclusive(e1.toInt, e2.toInt), Range.inclusive(e3.toInt, e4.toInt))}.toList
   
