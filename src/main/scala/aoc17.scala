@@ -84,29 +84,33 @@ def enterShape(s: Shape, c: Chamber, h: Height): Chamber =
   }
   addLayers(s, c, h)
 
-def moveAndDrawRock(s: Shape, c: Chamber, gases: List[Gas], h: Height): (List[Gas], Height) =
+def moveAndDrawRock(s: Shape, c: Chamber, gases: List[Gas], h: Height, distTop: Int = 0): (List[Gas], Height, Int) =
   val g = if (gases.size == 1) {gases ::: AOC17.input} else {gases}
   val newShape = s.move(c, g.head)
   if (newShape.lowestPoint == s.lowestPoint) {
     val maybeSide = s.moveSide(c, g.head)
     maybeSide.surrounding.foreach { case (x, y) => c(y)(x) = '#' }
     if ((c.size - maybeSide.highestPoint) > h) {
-      (g, c.size - maybeSide.highestPoint)
+      (g, c.size - maybeSide.highestPoint, maybeSide.highestPoint)
     } else {
-      (g, h)
+      (g, h, c.size - h)
     }
   } else {
-    moveAndDrawRock(newShape, c, g.tail, h)
+    moveAndDrawRock(newShape, c, g.tail, h, distTop)
   }
 
-def fillChamberUntil(c: Chamber, h: Height, numRocks: Int = 0, goalRocks: Int = 2022, gases: List[Gas] = AOC17.input, shapes: List[Shape] = shapes): Height =
+case class State(gas: Gas, shape: Shape, distTop: Int)
+
+def fillChamberUntil(c: Chamber, h: Height, states: List[State], numRocks: Int = 0, goalRocks: Int = 2022, gases: List[Gas] = AOC17.input, shapes: List[Shape] = shapes): Height =
   if (numRocks == goalRocks) {h} else {
     enterShape(shapes.head, c, h)
-    val (newGases, newH) = moveAndDrawRock(shapes.head, c, gases, h)
+    val (newGases, newH, distTop) = moveAndDrawRock(shapes.head, c, gases, h)
+    val newStates = State(newGases.head, shapes.head, distTop) :: states
+    if (newStates.distinct.size < newStates.size) println(s"${State(newGases.head, shapes.head, distTop)}, numrocks: $numRocks" )
     if (shapes.size != 1) {
-      fillChamberUntil(c, newH, numRocks + 1, goalRocks, newGases.tail, shapes.tail)
+      fillChamberUntil(c, newH, newStates, numRocks + 1, goalRocks, newGases.tail, shapes.tail)
     } else {
-      fillChamberUntil(c, newH, numRocks + 1, goalRocks, gases = newGases.tail)
+      fillChamberUntil(c, newH, newStates, numRocks + 1, goalRocks, gases = newGases.tail)
     }
   }
 
@@ -117,7 +121,7 @@ object AOC17 extends App:
 
   val chamber: Chamber = ArrayBuffer.fill(1, 7)('.').append(ArrayBuffer.fill(7)('_')).map(x => '|' +: x :+ '|')
 
-  val answerP1 = fillChamberUntil(chamber, 1) - 1
+  val answerP1 = fillChamberUntil(chamber, 1, List[State]()) - 1
 
   println("Answer to part 1: " + answerP1)
   println("Answer to part 2: missing :(")
