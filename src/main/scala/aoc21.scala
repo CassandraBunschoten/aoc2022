@@ -93,7 +93,7 @@ def goOverMonkeys(allMonkeys: List[Monkey], goal: String = "root"): Monkey =
 
 
 object AOC21 extends App: 
-  val input = Source.fromFile("src/main/resources/input_kat.txt")
+  val input = Source.fromFile("src/main/resources/input_example.txt")
                     .getLines
                     .map{l => l match {
                       case s"$name: $monkeyName1 + $monkeyName2" => MathMonkey(name, monkeyName1, monkeyName2, _+_)
