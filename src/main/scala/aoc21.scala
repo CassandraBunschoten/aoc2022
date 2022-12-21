@@ -1,128 +1,91 @@
 package aoc21
-
 import scala.io.Source
+import scala.collection.mutable._
+import scala.annotation.newMain
 
-sealed trait Monkey
-case class NumberMonkey(name: String, number: Long) extends Monkey
-case class MathMonkey(name: String, neighMonkey1: String, neighMonkey2: String, mathOp: (Long, Long) => Long) extends Monkey
-//case class SpecialMonkey(name: String, neighMonkey1: String, neighMonkey2: String, equalOp: (Long, Long) => Boolean) extends Monkey
-//// because evolution
-//case class Human(num: Long = 0) extends Monkey
 
-def lookForNumberMonkeys(nm: String, allMonkeys: List[Monkey]): Option[NumberMonkey] =
-  allMonkeys match {
-    case h :: t => h match {
-      case n: NumberMonkey if (n.name == nm) => Some(n)
-      case _                                 => lookForNumberMonkeys(nm, t)
-    }
-    case Nil                                 => None
-  }
+type Monkey = String
+type Numbers = Map[Monkey, Long]
+type Formulas = Map[Monkey, (Char, Monkey, Monkey)]
 
-def updateMonkey(mathMonkey: MathMonkey, allMonkeys: List[Monkey]): Monkey =
-  val nm1 = mathMonkey.neighMonkey1
-  val nm2 = mathMonkey.neighMonkey2
-  val opNeighMonkey1 = lookForNumberMonkeys(nm1, allMonkeys)
-  val opNeighMonkey2 = lookForNumberMonkeys(nm2, allMonkeys)
-  if (opNeighMonkey1.isDefined && opNeighMonkey2.isDefined) {
-    val nm = NumberMonkey(mathMonkey.name, mathMonkey.mathOp(opNeighMonkey1.get.number, opNeighMonkey2.get.number))
-    nm
-  } else {
-    mathMonkey
-  }
+def parse: (Numbers, Formulas) = {
+  val numbers = scala.collection.mutable.Map[Monkey, Long]()
+  val formulas = scala.collection.mutable.Map[Monkey, (Char, Monkey, Monkey)]()
 
-//def updateMonkeyP2(mathMonkey: MathMonkey, allMonkeys: List[Monkey], human: Long): Monkey =
-////  println(s"FOR $mathMonkey")
-//  val nm1 = mathMonkey.neighMonkey1
-//  val nm2 = mathMonkey.neighMonkey2
-////  println(s"LOOK AT $nm1 AND $nm2")
-//  val opNeighMonkey1 = lookForNumberMonkeys(nm1, allMonkeys)
-//  val opNeighMonkey2 = lookForNumberMonkeys(nm2, allMonkeys)
-////  println(s"FOUND $opNeighMonkey1, $opNeighMonkey2")
-//  if (opNeighMonkey1.isDefined && opNeighMonkey2.isDefined) {
-//    val nm = NumberMonkey(mathMonkey.name, mathMonkey.mathOp(opNeighMonkey1.get.number, opNeighMonkey2.get.number))
-////    println(s"NEW MONKEY: $nm")
-//    nm
-//  } else if (nm1 == "humn" && opNeighMonkey2.isDefined){
-//    val nm = NumberMonkey(mathMonkey.name, mathMonkey.mathOp(human, opNeighMonkey2.get.number))
-////    println(s"NEW MONKEY WITH HUMAN: $nm")
-//    nm
-//  } else if (nm2 == "humn" && opNeighMonkey1.isDefined){
-//    val nm = NumberMonkey(mathMonkey.name, mathMonkey.mathOp(opNeighMonkey1.get.number, human))
-////    println(s"NEW MONKEY WITH HUMAN: $nm")
-//    nm
-//  } else {
-////      println(s"NEW MONKEY: $mathMonkey")
-//      mathMonkey
-//  }
+  Source.fromResource("input_aoc21.txt")
+   .getLines
+   .foreach { l => 
+    l match {
+      case s"$name: $monkeyName1 + $monkeyName2" => formulas += (name -> ('+', monkeyName1, monkeyName2))
+      case s"$name: $monkeyName1 - $monkeyName2" => formulas += (name -> ('-', monkeyName1, monkeyName2))
+      case s"$name: $monkeyName1 / $monkeyName2" => formulas += (name -> ('/', monkeyName1, monkeyName2))
+      case s"$name: $monkeyName1 * $monkeyName2" => formulas += (name -> ('*', monkeyName1, monkeyName2))
+      case s"$name: $number"                     => numbers  += (name -> number.toLong) 
+   }}
 
-def goOverMonkeys(allMonkeys: List[Monkey], goal: String = "root"): Monkey =
-  if (lookForNumberMonkeys(goal, allMonkeys).isDefined) {lookForNumberMonkeys(goal, allMonkeys).get} else {
-  val newMonkeys = allMonkeys.scanLeft(allMonkeys)((updatedMonkeys, m) => m match {
-    case m: MathMonkey => {
-      val index = updatedMonkeys.indexOf(m)
-      updatedMonkeys.updated(index, updateMonkey(m, updatedMonkeys))
-    }
-    case _ => updatedMonkeys
-  })
-  goOverMonkeys(newMonkeys.last)
+  (numbers, formulas)
 }
 
-//def goOverMonkeysP2(allMonkeys: List[Monkey], human: Long, neigh1: String, neigh2: String): (Long, Long) =
-//  if (lookForNumberMonkeys(neigh1, allMonkeys).isDefined && lookForNumberMonkeys(neigh2, allMonkeys).isDefined)
-//    {(lookForNumberMonkeys(neigh1, allMonkeys).get.number, lookForNumberMonkeys(neigh2, allMonkeys).get.number)} else {
-//    val newMonkeys = allMonkeys.scanLeft(allMonkeys)((updatedMonkeys, m) => m match {
-//      case m: MathMonkey => {
-//        val index = updatedMonkeys.indexOf(m)
-//        updatedMonkeys.updated(index, updateMonkeyP2(m, updatedMonkeys, human))
-//      }
-//      case _ => updatedMonkeys
-//    })
-//    goOverMonkeysP2(newMonkeys.last, human, neigh1, neigh2)
-//  }
-//
-//def findHumanShout(allMonkeys: List[Monkey], num: Long, locationHuman: Int, neigh1: String, neigh2: String): Long = {
-//  println(num)
-//  val nextTry = allMonkeys.updated(locationHuman, Human(num))
-//  val neighs = goOverMonkeysP2(nextTry, num, neigh1, neigh2)
-//  val diff = neighs._1 - neighs._2
-//  if (diff == 0) {num} else {
-//    println(s"new num: ${num + diff}")
-//    findHumanShout(allMonkeys, num + diff, locationHuman, neigh1, neigh2)
-//  }
-//}
+def evaluate(numbers: Numbers, formulas: Formulas): (Numbers, Formulas) = {
+  var formulaSize = formulas.size
+  formulas.foreach { 
+    case (monkey, (op, lhs, rhs)) => 
+      val neigh1 = numbers.get(lhs)
+      val neigh2 = numbers.get(rhs)
 
+      if (neigh1.isDefined && neigh2.isDefined) {
+        val number = (op, neigh1, neigh2) match {
+          case ('+', Some(l), Some(r)) => l + r
+          case ('-', Some(l), Some(r)) => l - r
+          case ('*', Some(l), Some(r)) => l * r
+          case ('/', Some(l), Some(r)) => l / r 
+          case _ => sys.error("booboo")
+        }
+        numbers += (monkey -> number)
+        formulas -= (monkey)
+      }
+      else ()
+    }
+  if (formulas.size == formulaSize)
+    (numbers, formulas) 
+  else 
+  evaluate(numbers, formulas)
+}
 
-object AOC21 extends App: 
-  val input = Source.fromFile("src/main/resources/input_example.txt")
-                    .getLines
-                    .map{l => l match {
-                      case s"$name: $monkeyName1 + $monkeyName2" => MathMonkey(name, monkeyName1, monkeyName2, _+_)
-                      case s"$name: $monkeyName1 - $monkeyName2" => MathMonkey(name, monkeyName1, monkeyName2, _-_)
-                      case s"$name: $monkeyName1 / $monkeyName2" => MathMonkey(name, monkeyName1, monkeyName2, _/_)
-                      case s"$name: $monkeyName1 * $monkeyName2" => MathMonkey(name, monkeyName1, monkeyName2, _*_)
-                      case s"$name: $number"                     => NumberMonkey(name, number.toLong)
-                    }}
-                    .toList
+def findShout(numbers: Numbers, formulas: Formulas, search: Monkey = "root", result: Long = 0L): Long = 
+ if (search != "humn") {
+    val (op, lhs, rhs) = formulas(search)
+    val (newSearch, newResult) = (op, numbers.get(lhs), numbers.get(rhs)) match {
+      case ('=', None, Some(x)) => (lhs, x)
+      case ('=', Some(x), None) => (rhs, x)
+      case ('+', None, Some(x)) => (lhs, result - x)
+      case ('+', Some(x), None) => (rhs, result - x)
+      case ('-', None, Some(x)) => (lhs, result + x)
+      case ('-', Some(x), None) => (rhs, x - result)
+      case ('*', None, Some(x)) => (lhs, result / x)
+      case ('*', Some(x), None) => (rhs, result / x)
+      case ('/', None, Some(x)) => (lhs, result * x)
+      case ('/', Some(x), None) => (rhs, x / result)
+      case _ => sys.error("booooo")
+    }  
+    findShout(numbers, formulas, newSearch, newResult)
+ } else {
+  result
+ }
+  
 
-//  val inputP2 = Source.fromFile("src/main/resources/input_example.txt")
-//    .getLines
-//    .map{l => l match {
-//      case s"root: $monkeyName1 + $monkeyName2"  => SpecialMonkey("root", monkeyName1, monkeyName2, _==_)
-//      case s"humn: $number"                      => Human()
-//      case s"$name: $monkeyName1 + $monkeyName2" => MathMonkey(name, monkeyName1, monkeyName2, _+_)
-//      case s"$name: $monkeyName1 - $monkeyName2" => MathMonkey(name, monkeyName1, monkeyName2, _-_)
-//      case s"$name: $monkeyName1 / $monkeyName2" => MathMonkey(name, monkeyName1, monkeyName2, _/_)
-//      case s"$name: $monkeyName1 * $monkeyName2" => MathMonkey(name, monkeyName1, monkeyName2, _*_)
-//      case s"$name: $number" => NumberMonkey(name, number.toLong)
-//    }}
-//    .toList
-//
-//  val indexHuman = inputP2.indexOf(Human())
+object AOC21 extends App:
+  val (numbersP1, formulasP1) = parse
 
+  val answerP1 = evaluate(numbersP1, formulasP1)._1("root")
 
-//  println(findHumanShout(inputP2, 0, indexHuman)) neigh1: String = "qntq", neigh2: String = "qgth"
-//  println(findHumanShout(inputP2, 0, indexHuman, "pppw", "sjmn"))
+  val (numbersP2, formulasP2) = parse
+  val newFormulas = formulasP2.map { case (monkey, formula) => if (monkey == "root") ("root" -> ('=', formula._2, formula._3)) else (monkey, formula)}
+  val newNumbers = numbersP2 -= "humn"
+  val (evaluatedNumbers, evaluatedFormulas) = evaluate(newNumbers, newFormulas)
 
-//  println(updateMonkey(MathMonkey("drzm", "hmdt", "zczc", _ - _), input))
+  val answerP2 = findShout(evaluatedNumbers, evaluatedFormulas)
 
-  println(goOverMonkeys(input))
+  println("Answer to part 1: " + answerP1)
+  println("Answer to part 2: " + answerP2)
+
