@@ -84,29 +84,31 @@ def enterShape(s: Shape, c: Chamber, h: Height): Chamber =
   }
   addLayers(s, c, h)
 
-def moveAndDrawRock(s: Shape, c: Chamber, gases: List[Gas], h: Height, distTop: Int = 0): (List[Gas], Height, Int) =
+def moveAndDrawRock(s: Shape, c: Chamber, gases: List[Gas], h: Height): (List[Gas], Height) =
   val g = if (gases.size == 1) {gases ::: AOC17.input} else {gases}
   val newShape = s.move(c, g.head)
   if (newShape.lowestPoint == s.lowestPoint) {
     val maybeSide = s.moveSide(c, g.head)
     maybeSide.surrounding.foreach { case (x, y) => c(y)(x) = '#' }
     if ((c.size - maybeSide.highestPoint) > h) {
-      (g, c.size - maybeSide.highestPoint, maybeSide.highestPoint)
+      (g, c.size - maybeSide.highestPoint)
     } else {
-      (g, h, c.size - h)
+      (g, h)
     }
   } else {
-    moveAndDrawRock(newShape, c, g.tail, h, distTop)
+    moveAndDrawRock(newShape, c, g.tail, h)
   }
 
-case class State(gas: Gas, shape: Shape, distTop: Int)
+case class State(gas: Gas, shape: Shape, tinyChamber: Chamber)
 
 def fillChamberUntil(c: Chamber, h: Height, states: List[State], numRocks: Int = 0, goalRocks: Int = 2022, gases: List[Gas] = AOC17.input, shapes: List[Shape] = shapes): Height =
   if (numRocks == goalRocks) {h} else {
     enterShape(shapes.head, c, h)
-    val (newGases, newH, distTop) = moveAndDrawRock(shapes.head, c, gases, h)
-    val newStates = State(newGases.head, shapes.head, distTop) :: states
-    if (newStates.distinct.size < newStates.size) println(s"${State(newGases.head, shapes.head, distTop)}, numrocks: $numRocks" )
+    val (newGases, newH) = moveAndDrawRock(shapes.head, c, gases, h)
+    val newStates = State(newGases.head, shapes.head, c.take(20)) :: states
+    val repeats = newStates.diff(newStates.distinct).distinct
+    if (repeats.size > 1 && newStates.head == VStripe(3,3))
+      {println(s"SHAPE: ${newStates.head.shape}, GAS: ${newStates.head.gas}, HEIGHT: $newH, numRocks: $numRocks")} else {()}
     if (shapes.size != 1) {
       fillChamberUntil(c, newH, newStates, numRocks + 1, goalRocks, newGases.tail, shapes.tail)
     } else {
@@ -123,5 +125,18 @@ object AOC17 extends App:
 
   val answerP1 = fillChamberUntil(chamber, 1, List[State]()) - 1
 
+  //  val findPattern = fillChamberUntil(chamber, 1, List[State](), goalRocks = 10000)
+
+  // Very much manual labor after extracting info from the print statement in findPattern :')
+  val elephantDemand = 1000000000000L
+  val rocksBeforePattern = 3367
+  val rocksInPattern = 1725
+  val heightInPattern = 2734
+  val rocksAfterPattern = (elephantDemand - rocksBeforePattern) % rocksInPattern
+  val heightAfterPattern = 8021 - 5354
+  val heightBeforePattern = 5352
+  val totalHeightInPatterns = ((elephantDemand - rocksBeforePattern - rocksAfterPattern) / rocksInPattern) * heightInPattern
+  val answerP2 = heightBeforePattern + totalHeightInPatterns + heightAfterPattern
+
   println("Answer to part 1: " + answerP1)
-  println("Answer to part 2: missing :(")
+  println("Answer to part 2: " + answerP2)

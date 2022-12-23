@@ -7,7 +7,6 @@ case class Pairs(p1: String, p2: String, num: Int):
     println((compareStack(this.p1.toList, this.p2.toList), this.num)) ; (compareStack(this.p1.toList, this.p2.toList), this.num)
 
 def compareStack(s1: List[Char], s2: List[Char]): Boolean = {
-    println(s"STACK 1: $s1 \n STACK 2: $s2 \n\n")
     if (s1.isEmpty && s2.nonEmpty) { true } else if (s2.isEmpty) {false} else {
       (s1, s2) match {
         case (h1 :: t1, h2 :: t2) if (h1 == h2) => compareStack(t1, t2)
